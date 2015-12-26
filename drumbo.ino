@@ -87,28 +87,33 @@ void doSetting() {
 
 void doRunning() {
 
+  unsigned long mills = millis();
   unsigned long millisElapsed;
   
   if (hitCount == 0) {
     millisElapsed = 0;
+    if (mills / 500 % 2 == 0) {
+      Esplora.writeRGB(0,0,255);
+    } else {
+      Esplora.writeRGB(0,0,0);
+    }
+
   } else {
-    millisElapsed = millis() - timeStarted;
+    millisElapsed = mills - timeStarted;
+    if (millisElapsed % 1000 == 0) {
+      Serial.print("(" + String(millisElapsed) + ") (" + String(duration - millisElapsed / 1000) + ")\n");
+    }
   }
 
   if (millisElapsed >= duration * 1000) {
     // done
     mode = MODE_FINISHED;
   } else {
-    
-    if (millisElapsed / 500 % 2 == 0) {
-      Esplora.writeRGB(0,0,255);
-    } else {
-      Esplora.writeRGB(0,0,0);
-    }
-    
+        
     if (!isDepressed && Esplora.readButton(SWITCH_DOWN) == LOW) {
       isDepressed = true;
       if (hitCount == 0) {
+        Esplora.writeRGB(0,0,255);
         timeStarted = millis();
       }
     } else if (isDepressed && Esplora.readButton(SWITCH_DOWN) == HIGH) {
