@@ -17,7 +17,7 @@ int hitCount;
 int mode = MODE_READY;
 int minDuration = 1;
 int maxDuration = 300;
-int duration = 60;
+unsigned long duration = 60;
 int elapsed = 0;
 unsigned long timeStarted;
 
