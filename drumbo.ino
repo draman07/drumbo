@@ -11,7 +11,7 @@ int MODE_RUNNING = 3;
 int MODE_FINISHED = 4;
 
 boolean isDepressed = false;
-int depressedSince;
+unsigned long depressedSince;
 int hitCount;
 
 int mode = MODE_READY;
@@ -19,7 +19,7 @@ int minDuration = 1;
 int maxDuration = 300;
 int duration = 60;
 int elapsed = 0;
-int timeStarted;
+unsigned long timeStarted;
 
 void doReady() {
   isDepressed = false;
@@ -75,7 +75,7 @@ void doSetting() {
     }
   }
   if ((adjustment > 0 && duration < maxDuration) || (adjustment < 0 && duration > minDuration)) {
-    int millisElapsed = millis() - depressedSince;
+    unsigned long millisElapsed = millis() - depressedSince;
     int sub = 1000 / sq(millisElapsed / 1000 + 1);
     if ((millisElapsed % 1000) % sub == 0) {
       duration += adjustment;
@@ -86,15 +86,15 @@ void doSetting() {
 }
 
 void doRunning() {
-  
-  int millisElapsed;
+
+  unsigned long millisElapsed;
   
   if (hitCount == 0) {
     millisElapsed = 0;
   } else {
     millisElapsed = millis() - timeStarted;
   }
-  
+
   if (millisElapsed >= duration * 1000) {
     // done
     mode = MODE_FINISHED;
