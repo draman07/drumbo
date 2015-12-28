@@ -26,6 +26,7 @@ int MODE_SETTING = 2;
 int MODE_RUNNING = 3;
 int MODE_FINISHED = 4;
 
+boolean hit = false;
 boolean isDepressed = false;
 unsigned long depressedSince;
 int hitCount;
@@ -130,6 +131,7 @@ void enterRunning() {
   hitCount = 0;
   displayScore(0);
   displayTime(duration);
+  delay(10);
   mode = MODE_RUNNING;
 }
 
@@ -175,7 +177,6 @@ void doRunning() {
 
     // update time display if needed
     if (secondsRemaining != oldSecondsRemaining) {
-      Serial.print("(" + String(millisElapsed) + ") (" + String(secondsRemaining) + ")\n");
       displayTime(secondsRemaining);
     }
     oldSecondsRemaining = secondsRemaining;
@@ -188,19 +189,26 @@ void doRunning() {
   } else {
 
     // check for a hit and update counter / display if so.
-    if (!isDepressed && Esplora.readButton(SWITCH_RIGHT) == LOW) {
-      isDepressed = true;
-      // update countdown / LED when timer actually starts 
-      if (hitCount == 0) {
-        Esplora.writeRGB(0,0,255);
-        timeStarted = millis();
+
+    boolean newHit = false;
+    unsigned int thresh = Esplora.readSlider();
+    unsigned int level = Esplora.readMicrophone();
+  
+    if (level > thresh) {
+      if (!hit) {
+        if (!hitCount) {
+          Esplora.writeRGB(0,0,255);
+          timeStarted = millis();
+        }
+        newHit = true;
+        hit = true;
+        hitCount++;
       }
-    } else if (isDepressed && Esplora.readButton(SWITCH_RIGHT) == HIGH) {
-      Serial.print(String(++hitCount) + "\n");
+    } else if (hit && (level < (thresh / 2))) {
+      hit = false;
       displayScore(hitCount);
-      isDepressed = false;
     }
-    
+
   }
 }
 
