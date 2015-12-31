@@ -1,6 +1,7 @@
 #include <Esplora.h>
 #include <TFT.h>            // Arduino LCD library
 #include <SPI.h>
+#include "tinkerkit.h"
 
 void setup() {
   // initialize the serial communication:
@@ -131,7 +132,7 @@ void enterRunning() {
   hitCount = 0;
   displayScore(0);
   displayTime(duration);
-  delay(10);
+  delay(1000);
   mode = MODE_RUNNING;
 }
 
@@ -192,7 +193,7 @@ void doRunning() {
 
     boolean newHit = false;
     unsigned int thresh = Esplora.readSlider();
-    unsigned int level = Esplora.readMicrophone();
+    unsigned int level = readTinkerkitInput(INPUT_B);
   
     if (level > thresh) {
       if (!hit) {
